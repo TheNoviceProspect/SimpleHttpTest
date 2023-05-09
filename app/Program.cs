@@ -58,7 +58,7 @@ namespace WeatherBit
             {
                 // Get the weather data
                 var weatherData = await response.Content.ReadAsStringAsync();
-                WriteOutput("return.txt", weatherData.ToString());
+                WriteOutput("return.json", weatherData.ToString());
                 // Parse the weather data
                 var weather = JsonConvert.DeserializeObject<Weather>(weatherData);
 
