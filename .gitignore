@@ -2,4 +2,5 @@
 **/bin/
 **/obj/
 *.secret
-*.txt
+query.txt
+return.json
