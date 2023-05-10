@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Net.Http;
+using System.IO;
 using System.Net;
-using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+using WeatherBit.Data;
 
 namespace WeatherBit
 {
@@ -57,13 +59,15 @@ namespace WeatherBit
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 // Get the weather data
-                var weatherData = await response.Content.ReadAsStringAsync();
-                WriteOutput("return.json", weatherData.ToString());
+                string? weatherData = await response.Content.ReadAsStringAsync();
+                WriteOutput("return.json", weatherData);
+                using FileStream openStream = File.OpenRead("return.json");
                 // Parse the weather data
-                var weather = JsonConvert.DeserializeObject<Weather>(weatherData);
+
+                WeatherData? rawWeather = await JsonSerializer.DeserializeAsync<WeatherData>(openStream);
 
                 // Print the weather data
-                Console.WriteLine($"The weather in {weather?.Name} is: {weather?.Main?.Temp}°C, {weather?.Main?.Humidity}%");
+                Console.WriteLine($"The weather in {rawWeather?.data[0].city_name} is: {rawWeather?.data[0].temp}°C, {rawWeather?.data[0].rh}%");
             }
             else
             {
@@ -73,16 +77,4 @@ namespace WeatherBit
         }
     }
 
-    public class Weather
-    {
-        public string? Name { get; set; }
-
-        public MainWeather? Main { get; set; }
-
-        public class MainWeather
-        {
-            public double Temp { get; set; }
-            public double Humidity { get; set; }
-        }
-    }
 }
